@@ -224,3 +224,16 @@ data/*
 !data/.gitkeep
 *.db
 *.sqlite
+
+# Model weights (용량 큼, 저장소 제외)
+models/*
+!models/.gitkeep
+*.pt
+*.pth
+*.onnx
+
+# ROS2 build outputs
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+*.db3

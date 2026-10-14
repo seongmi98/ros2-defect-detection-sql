@@ -52,9 +52,34 @@
 검출 결과 하나를 저장·시각화·배출 판정 노드가 각각 구독하므로, 입력 장치나 후단 기능을 바꿔도 검출 노드는 수정하지 않는 구조입니다.
 
 ## 데이터
-- **NEU-DET** (Northeastern University 강판 표면 결함 데이터셋)
-- 결함 6종: crazing, inclusion, patches, pitted_surface, rolled-in_scale, scratches
-- 원본 데이터는 `data/`에 두며 저장소에는 올리지 않습니다. (다운로드 방법 정리 예정)
+**NEU-DET** (Northeastern University 열연 강판 표면 결함 데이터셋)
+
+| 항목 | 내용 |
+|---|---|
+| 결함 종류 | 6종: crazing, inclusion, patches, pitted_surface, rolled-in_scale, scratches |
+| 이미지 수 | 1,800장 (train 240장 / validation 60장, 클래스별 동일 — 불균형 없음) |
+| 이미지 형식 | 200×200, 흑백(1채널) JPG |
+| 라벨 형식 | Pascal VOC(XML), 결함마다 bbox `(xmin, ymin, xmax, ymax)` 픽셀 좌표 |
+| 특징 | 한 이미지에 같은 결함이 여러 개 있는 경우 있음 |
+
+**다운로드**
+- Kaggle "NEU Surface Defect Database"(Kaustubh Dixit 업로드)에서 받아 `data/`에 압축 해제
+- 원 출처: [Northeastern University, Kechen Song](https://faculty.neu.edu.cn/songkc/en/zdylm/263265/list/index.htm)
+- 원본 데이터는 저장소에 올리지 않습니다 (`.gitignore`)
+
+```
+data/
+├── train/
+│   ├── images/<결함명>/*.jpg
+│   └── annotations/*.xml
+└── validation/
+    ├── images/<결함명>/*.jpg
+    └── annotations/*.xml
+```
+
+**데이터 검수 결과**
+- 이미지와 라벨을 파일명 기준으로 짝지어 확인한 결과, `crazing_240`의 이미지는 `train`에, 라벨(XML)은 `validation`에 들어가 있음 (train crazing 라벨 239개 / validation 61개)
+- 폴더 기준으로 짝지으면 해당 이미지가 "라벨 없음 = 정상"으로 학습되므로, YOLO 형식 변환 시 **분할 폴더와 무관하게 파일명으로 라벨을 매칭**하도록 처리 (원본 데이터는 수정하지 않음)
 
 ## 기술 스택
 - ROS2 Humble (rclpy), Python
@@ -96,7 +121,8 @@ docs/        데모 영상·실험 그래프
 
 ## 진행 현황
 - [ ] WSL2 + Docker + ROS2 Humble 환경 구성
-- [ ] NEU-DET 다운로드 및 탐색
+- [x] NEU-DET 다운로드 및 탐색 (데이터 검수 포함)
+- [ ] VOC → YOLO 라벨 변환
 - [ ] 결함 검출 모델 학습 (v1)
 - [ ] image_publisher / detector_node / db_logger_node
 - [ ] visualizer_node / reject_node
